@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, Link } from "react-router-dom";
 import { Card, CardContent } from "./components/ui/card";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
@@ -24,46 +24,54 @@ function Market() {
   useEffect(() => {
     const interval = setInterval(() => {
       setInfluencers((prevInfluencers) =>
-        prevInfluencers.map((influencer) => ({
-          ...influencer,
-          price: Math.max(500, influencer.price + Math.floor(Math.random() * 200 - 100)),
-          volume: influencer.volume + Math.floor(Math.random() * 5000 - 2500),
-        }))
+        prevInfluencers.map((influencer) => {
+          const newPrice = Math.max(500, influencer.price + Math.floor(Math.random() * 200 - 100));
+          return {
+            ...influencer,
+            price: newPrice,
+            volume: influencer.volume + Math.floor(Math.random() * 5000 - 2500),
+            priceChange: newPrice >= influencer.price ? "green" : "red",
+          };
+        })
       );
     }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Market</h1>
-      <div className="flex space-x-4 mt-4">
+    <div className="page-container">
+      <h1>Influencer Market</h1>
+      <div className="category-buttons">
         {["All", "Music", "Movies", "Trending Influencer"].map((cat) => (
-          <Button key={cat} onClick={() => setCategory(cat)}>{cat}</Button>
+          <button 
+            key={cat} 
+            className={`button ${category === cat ? "active" : ""}`} 
+            onClick={() => setCategory(cat)}
+          >
+            {cat}
+          </button>
         ))}
       </div>
-      <div className="flex items-center gap-2 mt-4">
-        <Search className="w-5 h-5" />
-        <Input
+      <div className="search-container">
+        <input
+          className="search-input"
           placeholder="Search influencers..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div className="grid-container">
         {influencers
           .filter((influencer) => category === "All" || influencer.category === category)
           .map((influencer) => (
-            <Card key={influencer.name} className="p-4">
-              <CardContent>
-                <h2 className="text-lg font-semibold">{influencer.name}</h2>
-                <p className="text-sm text-gray-500">{influencer.category}</p>
-                <p className="text-xl font-bold">${influencer.price}</p>
-                <p className="text-sm text-gray-700">Volume: {influencer.volume.toLocaleString()}</p>
-                <p className="text-sm text-blue-500">News: {influencer.news} (Information is not accurate.)</p>
-                <Button className="mt-2 w-full">Buy</Button>
-              </CardContent>
-            </Card>
+            <div key={influencer.name} className="card">
+              <h2>{influencer.name}</h2>
+              <p>{influencer.category}</p>
+              <p className={`price ${influencer.priceChange}`}>${influencer.price}</p>
+              <p className="volume">Volume: {influencer.volume.toLocaleString()}</p>
+              <p className="news">News: {influencer.news} (Information is not accurate.)</p>
+              <div className="buy-button">Buy</div>
+            </div>
           ))}
       </div>
     </div>
@@ -72,8 +80,8 @@ function Market() {
 
 function Portfolio() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold">My Portfolio</h1>
+    <div className="page-container">
+      <h1>My Portfolio</h1>
       <p>Portfolio content goes here.</p>
     </div>
   );
@@ -82,15 +90,17 @@ function Portfolio() {
 export default function App() {
   return (
     <Router>
-      <div className="p-6 space-y-4">
-        <nav className="flex space-x-4">
-          <Link to="/market" className="text-blue-500">Market</Link>
-          <Link to="/portfolio" className="text-blue-500">My Portfolio</Link>
+      <Routes>
+        <Route path="/" element={<Navigate to="/market" />} />
+      </Routes>
+      <div className="page-container">
+        <nav className="nav-bar">
+          <Link to="/market">Market</Link>
+          <Link to="/portfolio">My Portfolio</Link>
         </nav>
         <Routes>
           <Route path="/market" element={<Market />} />
           <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/" element={<Market />} />
         </Routes>
       </div>
     </Router>
