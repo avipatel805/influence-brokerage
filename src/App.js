@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate, Link } from "react-router-dom";
-import { Card, CardContent } from "./components/ui/card";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Search } from "lucide-react";
+// import "./styles.css";
+// import "./index.css";
 
 const initialInfluencers = [
   { name: "Taylor Swift", category: "Music", price: 1850, volume: 500000, news: "Taylor Swift announces new album release date!" },
@@ -30,7 +28,7 @@ function Market() {
             ...influencer,
             price: newPrice,
             volume: influencer.volume + Math.floor(Math.random() * 5000 - 2500),
-            priceChange: newPrice >= influencer.price ? "green" : "red",
+            priceChange: newPrice >= influencer.price ? "text-green-400" : "text-red-400",
           };
         })
       );
@@ -39,38 +37,38 @@ function Market() {
   }, []);
 
   return (
-    <div className="page-container">
-      <h1>Influencer Market</h1>
-      <div className="category-buttons">
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-4xl font-bold text-center">Influencer Market</h1>
+      <div className="flex justify-center space-x-4 mt-6">
         {["All", "Music", "Movies", "Trending Influencer"].map((cat) => (
           <button 
             key={cat} 
-            className={`button ${category === cat ? "active" : ""}`} 
+            className={`px-4 py-2 rounded-lg text-lg font-semibold ${category === cat ? "bg-blue-500" : "bg-gray-700"}`} 
             onClick={() => setCategory(cat)}
           >
             {cat}
           </button>
         ))}
       </div>
-      <div className="search-container">
+      <div className="flex justify-center items-center gap-2 mt-6">
         <input
-          className="search-input"
+          className="p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
           placeholder="Search influencers..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <div className="grid-container">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {influencers
           .filter((influencer) => category === "All" || influencer.category === category)
           .map((influencer) => (
-            <div key={influencer.name} className="card">
-              <h2>{influencer.name}</h2>
-              <p>{influencer.category}</p>
-              <p className={`price ${influencer.priceChange}`}>${influencer.price}</p>
-              <p className="volume">Volume: {influencer.volume.toLocaleString()}</p>
-              <p className="news">News: {influencer.news} (Information is not accurate.)</p>
-              <div className="buy-button">Buy</div>
+            <div key={influencer.name} className="p-6 rounded-xl shadow-lg bg-gray-800 flex flex-col justify-between">
+              <h2 className="text-xl font-bold text-gray-200">{influencer.name}</h2>
+              <p className="text-sm text-gray-400">{influencer.category}</p>
+              <p className={`text-2xl font-bold ${influencer.priceChange}`}>${influencer.price}</p>
+              <p className="text-sm text-gray-500">Volume: {influencer.volume.toLocaleString()}</p>
+              <p className="text-sm text-blue-400">News: {influencer.news} (Information is not accurate.)</p>
+              <button className="mt-auto w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-lg">Buy</button>
             </div>
           ))}
       </div>
@@ -80,9 +78,9 @@ function Market() {
 
 function Portfolio() {
   return (
-    <div className="page-container">
-      <h1>My Portfolio</h1>
-      <p>Portfolio content goes here.</p>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-4xl font-bold text-center">My Portfolio</h1>
+      <p className="text-center mt-4">Portfolio content goes here.</p>
     </div>
   );
 }
@@ -93,10 +91,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/market" />} />
       </Routes>
-      <div className="page-container">
-        <nav className="nav-bar">
-          <Link to="/market">Market</Link>
-          <Link to="/portfolio">My Portfolio</Link>
+      <div className="p-6 space-y-4 bg-gray-900 min-h-screen">
+        <nav className="flex justify-start space-x-6 bg-gray-900 p-4 shadow-md">
+          <Link to="/market" className="text-blue-400 text-lg font-semibold hover:text-blue-500">Market</Link>
+          <Link to="/portfolio" className="text-blue-400 text-lg font-semibold hover:text-blue-500">My Portfolio</Link>
         </nav>
         <Routes>
           <Route path="/market" element={<Market />} />
