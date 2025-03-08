@@ -107,25 +107,50 @@
 
 
 import { BrowserRouter as Router, Route, Routes, Navigate, Link } from "react-router-dom";
+import { useState } from "react";
 import Market from "./pages/Market";
 import Portfolio from "./pages/Portfolio";
-// import "./styles.css";
-// import "./index.css";
+import Navbar from "./components/Navbar";
 
 export default function App() {
+  const [balance, setBalance] = useState(10000);
+  const [holdings, setHoldings] = useState({});
+
+  const buyStock = (name, price) => {
+    if (balance >= price) {
+      setBalance(balance - price);
+      setHoldings((prev) => ({
+        ...prev,
+        [name]: (prev[name] || 0) + 1,
+      }));
+    } else {
+      alert("Not enough funds!");
+    }
+  };
+
+  const sellStock = (name, price) => {
+    if (holdings[name] && holdings[name] > 0) {
+      setBalance(balance + price);
+      setHoldings((prev) => ({
+        ...prev,
+        [name]: prev[name] - 1,
+      }));
+    } else {
+      alert("You don't own this stock!");
+    }
+  };
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/market" />} />
       </Routes>
       <div className="p-6 space-y-4 bg-gray-900 min-h-screen">
-        <nav className="flex justify-start space-x-6 bg-gray-900 p-4 shadow-md">
-          <Link to="/market" className="text-blue-400 text-lg font-semibold hover:text-blue-500">Market</Link>
-          <Link to="/portfolio" className="text-blue-400 text-lg font-semibold hover:text-blue-500">My Portfolio</Link>
-        </nav>
+        <Navbar />
+        <div className="text-white text-lg font-semibold text-right pr-6">💰 Balance: ${balance.toLocaleString()}</div>
         <Routes>
-          <Route path="/market" element={<Market />} />
-          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/market" element={<Market buyStock={buyStock} />} />
+          <Route path="/portfolio" element={<Portfolio holdings={holdings} sellStock={sellStock} />} />
         </Routes>
       </div>
     </Router>

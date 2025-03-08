@@ -11,7 +11,7 @@ const initialInfluencers = [
   { name: "Zendaya", category: "Movies", price: 1800, volume: 460000, news: "Zendaya receives critical acclaim for her latest role." },
 ];
 
-export default function Market() {
+export default function Market({ buyStock }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [influencers, setInfluencers] = useState(initialInfluencers);
@@ -36,25 +36,6 @@ export default function Market() {
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
       <h1 className="text-4xl font-bold text-center">Influencer Market</h1>
-      <div className="flex justify-center space-x-4 mt-6">
-        {["All", "Music", "Movies", "Trending Influencer"].map((cat) => (
-          <button
-            key={cat}
-            className={`px-4 py-2 rounded-lg text-lg font-semibold ${category === cat ? "bg-blue-500" : "bg-gray-700"}`}
-            onClick={() => setCategory(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-      <div className="flex justify-center items-center gap-2 mt-6">
-        <input
-          className="p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
-          placeholder="Search influencers..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {influencers
           .filter((influencer) => category === "All" || influencer.category === category)
@@ -65,7 +46,7 @@ export default function Market() {
               <p className={`text-2xl font-bold ${influencer.priceChange}`}>${influencer.price}</p>
               <p className="text-sm text-gray-500">Volume: {influencer.volume.toLocaleString()}</p>
               <p className="text-sm text-blue-400">News: {influencer.news} (Information is not accurate.)</p>
-              <button className="mt-auto w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-lg">Buy</button>
+              <button onClick={() => buyStock(influencer.name, influencer.price)} className="mt-auto w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-lg font-semibold">Buy</button>
             </div>
           ))}
       </div>
